@@ -5,6 +5,8 @@ from sklearn.metrics import mean_squared_error
 from matplotlib import pyplot as plt
 import os
 import numpy as np
+from sklearn.datasets import fetch_california_housing
+
 
 def solver1():
     # Reading csv file into a pandas DataFrame
@@ -25,9 +27,9 @@ def solver1():
     # my_pca = my_pca.fit(birds)
 
     reduced_my_pca = my_pca.fit_transform(birds)
-
     reconstruct_birds = my_pca.inverse_transform(reduced_my_pca)
-    mse = mean_squared_error(birds,reconstruct_birds)
+    
+    mse = mean_squared_error(reconstruct_birds, birds)
 
     return("MSE: {}".format(mse))
 
@@ -71,3 +73,6 @@ def plotter():
             
 
     # -   Reconstructed data + post-processing (mean, std)
+
+def housing_plotter():
+    x = fetch_california_housing
