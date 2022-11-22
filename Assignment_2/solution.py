@@ -44,18 +44,30 @@ def plotter():
 
     # - Pre-processed data
 
-    scaler = StandardScaler().fit_transform(birds)
-    scalerx = [x[0] for x in scaler]
-    scalery = [x[1] for x in scaler]
+    scaler = StandardScaler()
+    standardized_birds = scaler.fit_transform(birds)
+    # print(type(scaler))
+    scalerx = [x[0] for x in standardized_birds]
+    scalery = [x[1] for x in standardized_birds]
+    
     plt.scatter(scalerx,scalery)
     plt.show()
 
     # - Data projected into 1D using PCA
-    my_pca = PCA(n_components=1).fit_transform(birds)
-    print(len(my_pca))
-    #y=np.zeros(len(my_pca))
-    #print(len(y))
-    plt.scatter(my_pca, y=np.zeros(len(my_pca)))
-
+    my_pca = PCA(n_components=1)
+    pca_birds = my_pca.fit_transform(birds)
+    # assert(len(pca_birds)==len(my_pca))
+    plt.scatter(pca_birds, y=np.zeros(len(pca_birds)))
+    plt.show()
+    
     # - Reconstructed data
+    reconstruct_scalar = my_pca.inverse_transform(pca_birds)
+    reconstruct_birds = scaler.inverse_transform(reconstruct_scalar)
+
+    plt.scatter([x[0] for x in reconstruct_birds],
+            [x[1] for x in reconstruct_birds])
+    plt.show()
+
+            
+
     # -   Reconstructed data + post-processing (mean, std)
