@@ -26,7 +26,7 @@ housing_df = pd.DataFrame(data=housing['data'], columns=housing['feature_names']
 # n!/k!(n-k)! = 8!/3!5! = 56
 def get_subsets(features):
     comb_all= list(itertools.combinations(features,3)) # all combinations as tuples
-    comb_all = [list(t) for t in comb_all]
+    comb_all = [list(t) for t in comb_all] # format for indexing in pd data frame
     return comb_all
 
 housing_subsets = get_subsets(housing_df.columns)
@@ -58,21 +58,6 @@ def lin_reg_subsets():
     
     return
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -135,6 +120,31 @@ def run_pca(data,pc_num):
     out_dict["Reconstr data"] = reconstr_data
     out_dict["Reconstr error norm"] = reconstr_error_norm
     out_dict["Reconstr error original"] = reconstr_error_original
+    out_dict["Component corrs"] = pca.components_ # Correlation between PCs and original features 
+    
+    # Selecting the strongest feature correlation for each PC
+    out_dict["Strongest corrs"] = []
+    for v in out_dict["Component corrs"]:
+        v_abs = np.absolute(v)
+        v_max= np.max(v_abs)
+        ind = np.where(v==v_max)[0][0] # returns int
+        out_dict["Strongest corrs"].append(ind)
+    
     
     return out_dict
+
+
+def house_pca_reg():
+    
+    house_pca = run_pca(housing_df, 3)
+    
+    # Setting names for the PCs by selecting the strongest feature correlation
+    pca_names = []
+    for i,k in enumerate(house_pca["Strongest corrs"]):
+        pc_num = i+1
+        feat_name = housing_df.columns[k]
+        pca_names.append('PC '+str(pc_num)+' '+feat_name)
+    
+    pca_frame = pd.DataFrame(data=house_pca["PCA data"],columns=pca_names)
+    print(lin_reg(pca_frame,house_target))
     
