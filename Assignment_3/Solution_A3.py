@@ -13,13 +13,18 @@ from sklearn.datasets import fetch_california_housing
 import itertools
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
-
+import matplotlib.pyplot as plt
 
 housing = fetch_california_housing()
 
 # Converting sklearn Bunch object into pandas data frame
 # Without target column
 housing_df = pd.DataFrame(data=housing['data'], columns=housing['feature_names'])
+
+
+#######################
+######## 2.1.1 ########
+#######################
 
 
 # There have to be 56 unique combinations for taking subsets of 3 (k) from 8 (n) features:
@@ -34,6 +39,7 @@ house_target = housing['target'] # type np array
 
 
 def lin_reg(data,target):
+    
     feature_names = list(data.columns)
     X = data.to_numpy() # shape: (20640,3)
     y = target # shape: (20640,)
@@ -43,6 +49,7 @@ def lin_reg(data,target):
     mse = mean_squared_error(y, y_hat)
     
     return ((feature_names,mse))
+
 
 
 def lin_reg_subsets():
@@ -56,9 +63,12 @@ def lin_reg_subsets():
     print('\n')
     print('Min error set: ',min_error_set,'\n Min error: ',min_error)
     
-    return
     
 
+
+#######################
+######## 2.1.2 ########
+#######################
 
 
 def compute_reconstr_error(array1,array2):
@@ -147,4 +157,95 @@ def house_pca_reg():
     
     pca_frame = pd.DataFrame(data=house_pca["PCA data"],columns=pca_names)
     print(lin_reg(pca_frame,house_target))
+    
+
+
+
+
+#######################
+######## 2.2 ##########
+#######################
+
+
+def lin_reg_1d(data,target):
+    
+    out_dict= dict()
+    
+    feature_name = data.name
+    X = data.to_numpy() # shape: (20640,)
+    X = X.reshape(-1, 1) # shape: (20640,1)
+    y = target # shape: (20640,)
+    lin_regressor = LinearRegression()
+    lin_regressor.fit(X,y)
+    y_hat = lin_regressor.predict(X)
+    mse = mean_squared_error(y, y_hat)
+    
+    out_dict['feature name'] = feature_name
+    out_dict['mse'] = mse
+    out_dict['X'] = X
+    out_dict['y_hat'] = y_hat
+    out_dict['y'] = y
+    out_dict['coeffs'] = lin_regressor.coef_
+    out_dict['intercept'] = lin_regressor.intercept_
+    
+    return (out_dict)
+    
+
+def subset_PCA_1dim():
+    
+    #### Subset method ####
+    all_linreg_outs = []
+    for feat in housing_df.columns: # Do lin reg on every variable
+        linreg_out = lin_reg_1d(housing_df[feat], house_target)
+        all_linreg_outs.append(linreg_out) # store each out dict
+    min_error = 1000
+    min_dict =dict()
+    for d in all_linreg_outs:
+        if d['mse'] < min_error:
+            min_error = d['mse']
+            min_dict = d
+        else:
+            continue
+        
+    print('Subset MSE: ',min_dict['mse'],'\n')
+        
+    #### Plot outputs subset ####
+    plt.scatter(min_dict['X'],min_dict['y'])
+    
+    # Compute y_hat values with slope intercept formula
+    y_vals = min_dict['intercept'] + min_dict['coeffs']*min_dict['X']
+    plt.plot(min_dict['X'],y_vals, color='green',linewidth=3)
+    
+    # Or directly produce line plot with y_hat values from lin reg (same result)
+    #plt.plot(min_dict['X'],min_dict['y_hat'], color='red',linewidth=3)
+    
+    plt.title('Linear regression subset method')
+    plt.ylabel('Price')
+    plt.xlabel(min_dict['feature name'])
+    plt.show()
+    
+    #print(min_dict['coeffs'])
+    #print(min_dict['intercept'])
+    
+    #### PCA method ####
+    house_pca_1d = run_pca(housing_df, 1)
+    pca_1d_frame = pd.Series(data=house_pca_1d['PCA data'].flatten())
+    lin_reg_pca = lin_reg_1d(pca_1d_frame,house_target)
+    
+    print('PCA MSE: ',lin_reg_pca['mse'],'\n')
+    
+    #### Plot outputs subset ####
+    plt.scatter(lin_reg_pca['X'],lin_reg_pca['y'])
+    
+    # Compute y_hat values with slope intercept formula
+    y_vals = lin_reg_pca['intercept'] + lin_reg_pca['coeffs']*lin_reg_pca['X']
+    plt.plot(lin_reg_pca['X'],y_vals, color='yellow',linewidth=3)
+    
+    # Or directly produce line plot with y_hat values from lin reg (same result)
+    #plt.plot(lin_reg_pca['X'],lin_reg_pca['y_hat'], color='red',linewidth=3)
+    
+    plt.title('Linear regression PCA method')
+    plt.ylabel('Price')
+    plt.xlabel('PC')
+    plt.show()
     
