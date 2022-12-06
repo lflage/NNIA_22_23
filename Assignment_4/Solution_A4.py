@@ -104,15 +104,17 @@ def train_loop(dataloader,model,loss_fn,optimizer):
 
 def test_loop(dataloader,model,loss_fn):
     print('---------- Test losses ----------')
-    batch_total = len(dataloader)
+    batch_num = len(dataloader)
+    #batch_num = len(dataloader.dataset)
+    #print('batch_num',batch_num)
     total_loss = 0
     with torch.no_grad():
         for batch,(X,y) in enumerate(dataloader):
             pred = model(X)
             loss = loss_fn(pred,y)
             total_loss += loss
-            print(f'Batch [{batch+1}/{batch_total}] | Loss {loss}')
-    print(f'## Average loss {total_loss/len(dataloader.dataset)} ##')
+            print(f'Batch [{batch+1}/{batch_num}] | Loss {loss}')
+    print(f'## Average loss {total_loss/batch_num} ##')
         
 
 
