@@ -43,26 +43,33 @@ class NeuralNetwork(nn.Module):
 
 
 def train_loop(dataloader, model, loss_fn, optimizer):
-    size = len(dataloader.dataset)
+    print("------- Training Loop -------")
+    # size = len(dataloader.dataset)
+    size = len(dataloader)
+    commulative_loss = 0
     for batch, (X, y) in enumerate(dataloader):
         # Compute prediction and loss
         pred = model(X)
         loss = loss_fn(pred, y)
+        commulative_loss += loss.item()
 
         # Backpropagation
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        
-        if batch % 10 == 0:
-            loss, current = loss.item(), batch * len(X)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+
+        # if batch % 10 == 0:
+        #     loss, current = loss.item(), batch * len(X)
+        #     print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+    print("Traning Loss:", commulative_loss/size)
+    return commulative_loss/size
+    
 
 
 def test_loop(dataloader, model, loss_fn):
+    print("------- Test Loop --------")
     size = len(dataloader)
     num_batches = len(dataloader)
-    print("num_batches sier", num_batches)
     test_loss = 0
 
     with torch.no_grad():
@@ -70,7 +77,6 @@ def test_loop(dataloader, model, loss_fn):
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             #correct += (pred.argmax(1) == y).type(torch.float).sum().item()
-    print("test cummulative loss: ", test_loss)
     test_loss /= num_batches
     #correct /= size
     print(f"Avg MSE loss : {test_loss:>8f} \n")
