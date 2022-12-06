@@ -3,6 +3,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_california_housing
+from sklearn.preprocessing import StandardScaler
 
 class CustomDataset():
     """Custom dataset Loader for California Housing
@@ -42,7 +43,7 @@ class NeuralNetwork(nn.Module):
 
 
 def train_loop(dataloader, model, loss_fn, optimizer):
-    size = len(dataloader)
+    size = len(dataloader.dataset)
     for batch, (X, y) in enumerate(dataloader):
         # Compute prediction and loss
         pred = model(X)
@@ -52,8 +53,8 @@ def train_loop(dataloader, model, loss_fn, optimizer):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
-        if batch % 100 == 0:
+        
+        if batch % 10 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
@@ -61,6 +62,7 @@ def train_loop(dataloader, model, loss_fn, optimizer):
 def test_loop(dataloader, model, loss_fn):
     size = len(dataloader)
     num_batches = len(dataloader)
+    print("num_batches sier", num_batches)
     test_loss = 0
 
     with torch.no_grad():
@@ -72,3 +74,4 @@ def test_loop(dataloader, model, loss_fn):
     test_loss /= num_batches
     #correct /= size
     print(f"Avg MSE loss : {test_loss:>8f} \n")
+    return test_loss
