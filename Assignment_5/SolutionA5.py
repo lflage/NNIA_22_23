@@ -65,7 +65,7 @@ def show_plot():
     x=[-0.3,0]              
     y=[0.3,0]
     z=[4.27,4]
-    ax.scatter(x, y, z)                        # scatter plot
+    ax.scatter(x, y, z) # scatter plot
     
     ax.set_xlabel('x')
     ax.set_ylabel('y')
