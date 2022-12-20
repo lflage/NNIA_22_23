@@ -17,29 +17,31 @@ class Network:
 
     def forward(self, x):
         """To Do: implement me"""
-        h = self.w1 @ x + self.b1
-        forward_out = self.sigmoid(h)
-        return h, forward_out
+        self.h = self.w1 @ x + self.b1
+        self.sigmoid(self.h)
+        self.sigmoid_gradient(self.s)
+        pass
 
     def sigmoid(self, x):
         """To Do: implement me"""
 
-        x = 1/(1+np.exp(-x))
-        return x
+        self.s = 1/(1+np.exp(-x))
+        pass
 
     def sigmoid_gradient(self, x):
         """To Do: implement me"""
-        x = (1-self.sigmoid(x)) * self.sigmoid(x)
+        self.sg = (1-x) * x
         pass
 
     def loss(self, y, y_hat):
         """To Do: implement me"""
-        l = (0.5*(y_hat-y)**2).sum()
-        return l
+        self.l =  (0.5*(y_hat-y)**2).sum()
+        pass
 
     def backward(self, x, y, h):
         """To Do: implement me"""
-
+        self.delta_w1 = (self.s - y)
+        # delta_g = (self.)
         pass
 
 if __name__ == "__main__":
