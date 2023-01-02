@@ -45,9 +45,9 @@ train_loader = data_utils.DataLoader(train, batch_size=10)
 test = data_utils.TensorDataset(X_test, y_test)
 test_loader = data_utils.DataLoader(test, batch_size=10)
 
-#train_features, train_labels = next(iter(train_loader))
-#print(f"Feature batch shape: {train_features.size()}")
-#print(f"Labels batch shape: {train_labels.size()}")
+train_features, train_labels = next(iter(train_loader))
+print(f"Feature batch shape: {train_features.size()}")
+print(f"Labels batch shape: {train_labels.size()}")
 
 ##############################
 #### Defining model class ####
