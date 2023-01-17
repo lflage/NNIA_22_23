@@ -1,3 +1,5 @@
 **/__pycache__
 **/*.zip
 **/.vscode
+**/*_checkpoints
+**/data
