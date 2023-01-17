@@ -2,4 +2,5 @@
 **/*.zip
 **/.vscode
 **/*_checkpoints
+**/.ipynb_checkpoints
 **/data
